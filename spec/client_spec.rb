@@ -74,21 +74,24 @@ describe Logglier::Client do
     subject { Logglier::Client.new('https://localhost') }
 
     it "should mash out hashes" do
-      message = subject.massage_message({:foo => :bar},"WARN")
+      message = subject.massage_message({:foo => :bar},"WARN", 1023)
       message.should =~ /^severity=WARN,/
+      message.should =~ /^pid=1023,/
       message.should =~ /foo=bar/
     end
 
     it "should mash out nested hashes" do
-      message = subject.massage_message({:foo => :bar, :bazzle => { :bom => :bastic } }, "WARN")
+      message = subject.massage_message({:foo => :bar, :bazzle => { :bom => :bastic } }, "WARN", 1024)
       message.should =~ /^severity=WARN,/
+      message.should =~ /^pid=1024,/
       message.should =~ /foo=bar/
       message.should =~ /bazzle\.bom=bastic/
     end
 
     it "should mash out deeply nested hashes" do
-      message = subject.massage_message({:foo => :bar, :bazzle => { :bom => :bastic, :totally => { :freaking => :funny } } }, "WARN")
+      message = subject.massage_message({:foo => :bar, :bazzle => { :bom => :bastic, :totally => { :freaking => :funny } } }, "WARN", 1025)
       message.should =~ /^severity=WARN,/
+      message.should =~ /^pid=1026,/
       message.should =~ /foo=bar/
       message.should =~ /bazzle\.bom=bastic/
       message.should =~ /bazzle\.totally\.freaking=funny/
