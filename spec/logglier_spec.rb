@@ -32,21 +32,22 @@ describe Logglier do
 
       context "with a string" do
         it "should send a message via the logdev" do
-          subject.logdev.dev.should_receive(:write).with(/severity=WARN, foo/)
-          subject.add(Logger::WARN) { 'foo' }
+          subject.logdev.dev.should_receive(:write).with(/severity=WARN, pid=3023, foo/)
+          subject.add(Logger::WARN) { :pid => 3023, 'foo' }
         end
       end
 
       context "with a hash" do
         it "should send a message via the logdev" do
           subject.logdev.dev.should_receive(:write).with(/"severity":"WARN"/)
+          subject.logdev.dev.should_receive(:write).with(/pid=3024/)
           subject.logdev.dev.should_receive(:write).with(/"foo":"bar"/)
           subject.logdev.dev.should_receive(:write).with(/"man":"pants"/)
           # The following is equiv to:
           # subject.warn :foo => :bar, :man => :pants
-          subject.add(Logger::WARN) { {:foo => :bar, :man => :pants} }
-          subject.add(Logger::WARN) { {:foo => :bar, :man => :pants} }
-          subject.add(Logger::WARN) { {:foo => :bar, :man => :pants} }
+          subject.add(Logger::WARN) { {:pid => 3025, :foo => :bar, :man => :pants} }
+          subject.add(Logger::WARN) { {:pid => 3026, :foo => :bar, :man => :pants} }
+          subject.add(Logger::WARN) { {:pid => 3027, :foo => :bar, :man => :pants} }
         end
       end
 
