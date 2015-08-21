@@ -6,7 +6,7 @@ describe Logglier do
   end
 
   context "HTTPS" do
-
+    processid=Process.pid         #for current process id
     context "w/o any options" do
       subject { new_logglier('https://localhost') }
 
@@ -32,21 +32,22 @@ describe Logglier do
 
       context "with a string" do
         it "should send a message via the logdev" do
-          subject.logdev.dev.should_receive(:write).with(/severity=WARN, foo/)
-          subject.add(Logger::WARN) { 'foo' }
+          subject.logdev.dev.should_receive(:write).with(/severity=WARN, pid=#{processid} foo/)
+          subject.add(Logger::WARN) { :pid => processid, 'foo' }
         end
       end
 
       context "with a hash" do
         it "should send a message via the logdev" do
           subject.logdev.dev.should_receive(:write).with(/"severity":"WARN"/)
+          subject.logdev.dev.should_receive(:write).with(/pid=#{processid}/)
           subject.logdev.dev.should_receive(:write).with(/"foo":"bar"/)
           subject.logdev.dev.should_receive(:write).with(/"man":"pants"/)
           # The following is equiv to:
           # subject.warn :foo => :bar, :man => :pants
-          subject.add(Logger::WARN) { {:foo => :bar, :man => :pants} }
-          subject.add(Logger::WARN) { {:foo => :bar, :man => :pants} }
-          subject.add(Logger::WARN) { {:foo => :bar, :man => :pants} }
+          subject.add(Logger::WARN) { {:pid => processid, :foo => :bar, :man => :pants} }
+          subject.add(Logger::WARN) { {:pid => processid, :foo => :bar, :man => :pants} }
+          subject.add(Logger::WARN) { {:pid => processid, :foo => :bar, :man => :pants} }
         end
       end
 
